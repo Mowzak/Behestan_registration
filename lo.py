@@ -4,11 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys 
-from datetime import datetime, timedelta,date
 from selenium.webdriver.chrome.options import Options
-import jdatetime
-from bs4 import BeautifulSoup
-import pandas as pd
 from time import sleep
 import requests
 import json
@@ -267,17 +263,18 @@ def print_results(results,doihaveit):
                 found = True
 
     return found
-my_ln_list = ["8120013","1120018","8104389"]
+
+
+lessons = eval(open("lesson.json","r").read())
+my_ln_list = [i for i in lessons.keys()]
 
 #### 3list entezar 5taghirgroh 4hazf 1sabt
-doihaveit = {"8120013":1,"1120018":5,"8104389":1}
-
+doihaveit = {i:lessons[i]["ac"] for i in my_ln_list}
 ##this can be include, edit all exlude var and put a false befor condition
-inexclude = {'1120018':["e","07","09","30","44","02","11","13","14","15","16","17","20","21","22","23","24","26","25","27","28","32","34","40","41","45","48","49","50","51"],
-           '8120013':["e"],
-           "8104389":["e","21"]}
+inexclude = {i:[lessons[i]["fil"]]+lessons[i]["lst"] for i in my_ln_list}
 #8104269 kargah     1120018 zaban  8104389 az shimi
 counter=0
+
 s,json_data =  login(True)
 open("log.txt",'w')
 while True:
