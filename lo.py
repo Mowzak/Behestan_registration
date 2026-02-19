@@ -11,8 +11,14 @@ import json
 import pyautogui
 import ast
 import os
+import logging
 
-
+logging.basicConfig(
+    filename="log.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    filemode='w'
+)
 
 # options = Options()
 # options.add_argument('--headless')  # Headless mode
@@ -24,6 +30,11 @@ import os
 
 user = "mm.yadi"
 pas = os.getenv("UTPASS")
+pas = "Ali1379ali@@@"
+print(pas)
+if pas is None:
+    logging.error("password is incorrect")
+    exit()
 post_url='https://ems2.ut.ac.ir/frm/F0414_PROCESS_REGREGISTER020/F0414_PROCESS_REGREGISTER020.svc/'
 
 
@@ -184,7 +195,7 @@ def load_records(filepath):
             try:
                 records.append(ast.literal_eval(line))
             except Exception as e:
-                print(e)
+                logging.error(e)
     return records
 
 def find_available_offers(ln_list, filepath="information.txt",inexclude=[]):
@@ -199,7 +210,7 @@ def find_available_offers(ln_list, filepath="information.txt",inexclude=[]):
         rec = ln_to_record.get(ln)
 
         if rec is None:
-            print(f"[!] ln={ln} not found in file.")
+            logging.info(f"[!] ln={ln} not found in file.")
             continue
 
         ci = rec["ci"]
@@ -215,7 +226,7 @@ def find_available_offers(ln_list, filepath="information.txt",inexclude=[]):
                     if not(ofr["g"] in inexclude[ln]):
                         continue
                 case _:
-                    print(f"{ln} get passed no exclude/include")
+                    logging.error(f"{ln} get passed no exclude/include")
                     pass
             rc = ofr.get("rc", 0)
             dc = ofr.get("dc", 0)
@@ -235,7 +246,7 @@ def find_available_offers(ln_list, filepath="information.txt",inexclude=[]):
                 "offers":  matching_offers
             })
         else:
-            print(f"[~] ln={ln} (ci={ci}) — no offers with rc < dc found.")
+            logging.info(f"[~] ln={ln} (ci={ci}) — no offers with rc < dc found.")
 
     return results
 
@@ -244,7 +255,7 @@ def print_results(results,doihaveit):
 
     found = False
     if not results:
-        print("No results found.")
+        logging.warning("No results found.")
         return found
     
     with open("action.txt","w") as f:
@@ -259,7 +270,7 @@ def print_results(results,doihaveit):
                 wks_found.append(wk)
                 wks_found = str(wks_found).replace("'",'"').replace(" ","")
                 f.write(str(wks_found))
-                print(wks_found)
+                logging.info(wks_found)
                 found = True
 
     return found
@@ -280,11 +291,13 @@ open("log.txt",'w')
 while True:
     counter+=1
     pyautogui.click()
+    input()
     check(s,json_data)
     results = find_available_offers(my_ln_list, inexclude=inexclude,filepath="information.txt",)
     found = print_results(results,doihaveit),
     if found:
         action(s,json_data)
+    logging.info(counter)
     print(counter)
 
 
