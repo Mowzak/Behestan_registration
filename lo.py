@@ -287,7 +287,7 @@ inexclude = {i:[lessons[i]["fil"]]+lessons[i]["lst"] for i in my_ln_list}
 counter=0
 
 s,json_data =  login(True)
-open("log.txt",'w')
+
 while True:
     counter+=1
     pyautogui.click()
